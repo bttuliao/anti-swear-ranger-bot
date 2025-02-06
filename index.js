@@ -43,8 +43,8 @@ client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
 
     if (interaction.commandName === 'swearjar') {
-        const currentUser = interaction.options.getUser('user').id;
-        const currentSwearCount = swearCounts[currentUser] || 0;
+        const currentUser = interaction.options.getUser('user');
+        const currentSwearCount = swearCounts[currentUser.id] || 0;
 
         await interaction.reply(
             `${currentUser.username} broke the anti-swear law ${currentSwearCount} times.`
@@ -69,9 +69,7 @@ client.on('messageCreate', (message) => {
                 swearCounts[currentUser]++;
             }
 
-            if (i === 0) {
-                swearWordsPresent = true;
-            }
+            swearWordsPresent = true;
         }
     }
 
