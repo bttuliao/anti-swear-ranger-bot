@@ -24,12 +24,12 @@ client.on('ready', async () => {
     console.log(`${client.user.tag} reporting for duty!`);
 
     try {
-        console.log('Registering swear jar');
+        console.log('Dusting off swear jar');
         await rest.put(
             Routes.applicationCommands(process.env.CLIENT_ID),
             {body: commands}
         );
-        console.log('Swear jar registered!');
+        console.log('Swear jar has been placed!');
     } catch (error) {
         console.error('Error registering swear jar: ', error);
     }
@@ -47,7 +47,7 @@ client.on('interactionCreate', async (interaction) => {
         const currentSwearCount = swearCounts[currentUser.id] || 0;
 
         await interaction.reply(
-            `${currentUser.username} broke the anti-swear law ${currentSwearCount} times.`
+            `<@${currentUser.id}> broke the anti-swear law ${currentSwearCount} times.`
         );
     }
 });
@@ -59,21 +59,23 @@ client.on('messageCreate', (message) => {
     const messageContent = message.content.toLowerCase();
     const messageSplitIntoWords = messageContent.split(/\s+/);
 
-    let swearWordsPresent = false;
+    let swearWordsPresentInMessage = false;
 
     for (let i = 0; i < messageSplitIntoWords.length; i++) {
-        if (filteredWords.includes(messageSplitIntoWords[i])) {
+        const containsSwearWord = filteredWords.some(swearWord => messageSplitIntoWords[i].includes(swearWord));
+
+        if (containsSwearWord) {
             if (!swearCounts[currentUser]) {
                 swearCounts[currentUser] = 1;
             } else {
                 swearCounts[currentUser]++;
             }
 
-            swearWordsPresent = true;
+            swearWordsPresentInMessage = true;
         }
     }
 
-    if (swearWordsPresent) {
+    if (swearWordsPresentInMessage) {
         const randomResponse = rangerResponses[Math.floor(Math.random() * rangerResponses.length)];
         message.reply(`${message.author} ` +  randomResponse);
     }
